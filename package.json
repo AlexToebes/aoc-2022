@@ -1,0 +1,21 @@
+{
+  "name": "advent-of-code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "day3": "npx ts-node-dev ./day3",
+    "day4": "npx ts-node-dev ./day4",
+    "day5": "npx ts-node-dev ./day5",
+    "day6": "npx ts-node-dev ./day6"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "@types/node": "^18.11.10"
+  },
+  "dependencies": {
+  }
+}
