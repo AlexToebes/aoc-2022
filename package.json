@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "day1": "node day1",
+    "day2": "node day2",
     "day3": "npx ts-node-dev ./day3",
     "day4": "npx ts-node-dev ./day4",
     "day5": "npx ts-node-dev ./day5",
@@ -16,6 +18,5 @@
     "typescript": "^4.9.3",
     "@types/node": "^18.11.10"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
