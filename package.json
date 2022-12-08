@@ -10,7 +10,8 @@
     "day4": "npx ts-node-dev ./day4",
     "day5": "npx ts-node-dev ./day5",
     "day6": "npx ts-node-dev ./day6",
-    "day7": "npx ts-node-dev ./day7"
+    "day7": "npx ts-node-dev ./day7",
+    "day8": "npx ts-node-dev ./day8"
   },
   "keywords": [],
   "author": "",
