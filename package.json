@@ -11,7 +11,8 @@
     "day5": "npx ts-node-dev ./day5",
     "day6": "npx ts-node-dev ./day6",
     "day7": "npx ts-node-dev ./day7",
-    "day8": "npx ts-node-dev ./day8"
+    "day8": "npx ts-node-dev ./day8",
+    "day9": "npx ts-node-dev ./day9"
   },
   "keywords": [],
   "author": "",
