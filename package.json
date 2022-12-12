@@ -6,20 +6,20 @@
   "scripts": {
     "day1": "node day1",
     "day2": "node day2",
-    "day3": "npx ts-node-dev ./day3",
-    "day4": "npx ts-node-dev ./day4",
-    "day5": "npx ts-node-dev ./day5",
-    "day6": "npx ts-node-dev ./day6",
-    "day7": "npx ts-node-dev ./day7",
-    "day8": "npx ts-node-dev ./day8",
-    "day9": "npx ts-node-dev ./day9"
+    "day3": "ts-node-dev ./day3",
+    "day4": "ts-node-dev ./day4",
+    "day5": "ts-node-dev ./day5",
+    "day6": "ts-node-dev ./day6",
+    "day7": "ts-node-dev ./day7",
+    "day8": "ts-node-dev ./day8",
+    "day9": "ts-node-dev ./day9",
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^4.9.3",
-    "@types/node": "^18.11.10"
-  },
-  "dependencies": {}
+    "@types/node": "^18.11.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.9.3"
+  }
 }
