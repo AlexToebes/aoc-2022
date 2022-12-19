@@ -14,7 +14,8 @@
     "day8": "ts-node-dev ./day8",
     "day9": "ts-node-dev ./day9",
     "day10": "ts-node-dev ./day10",
-    "day11": "ts-node-dev ./day11"
+    "day11": "ts-node-dev ./day11",
+    "day12": "ts-node-dev ./day12"
   },
   "keywords": [],
   "author": "",
