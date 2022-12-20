@@ -5,9 +5,35 @@ import {StringIterator} from "./StringIterator";
 export class List implements IPacketData {
     constructor(private data: IPacketData[]) {}
 
-    validateOrder(right: List) {
+    validateOrder(right: IPacketData | undefined): boolean {
+        if(!right) return false;
+
         const left = this;
-        return true;
+
+        if(right instanceof Integer) {
+            return this.validateOrder(new List([right]));
+        }
+        if(right instanceof List) {
+            for (const pair of this.createListPair(right)) {
+                if (!left) return true;
+                if (left.validateOrder(right))
+            }
+            const a = this.createListPair(right as List).map(([left, right]) => {
+                return left ? left.validateOrder(right) : true;
+            }).includes()
+            return true;
+        }
+
+        throw new Error('unhandled IPacketData type');
+    }
+
+    createListPair(right: List) {
+        const left = this;
+        const result: [IPacketData?, IPacketData?][] = [];
+        for (let i = 0; left.data[i] || right.data[i]; i++) {
+            result.push([left.data[i], right.data[i]]);
+        }
+        return result;
     }
 
     static fromString(input: string): List {
