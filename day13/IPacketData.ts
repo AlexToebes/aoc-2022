@@ -1,3 +1,10 @@
-export interface IPacketData {
-    validateOrder(right: IPacketData | undefined): boolean;
+export enum ValidationResult {
+    Good,
+    Maybe,
+    Bad,
+}
+
+export interface IPacketData{
+    validate(right: IPacketData | undefined): ValidationResult;
+    toString(): string;
 }

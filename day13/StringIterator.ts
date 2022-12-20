@@ -1,34 +1,17 @@
-export class StringIterator implements Iterable<string>, Iterator<string> {
-    constructor(
-        private string: string,
-        private offset: number = 0,
-    ) {}
+export class StringIterator implements Iterator<string>, Iterable<string>{
+    private offset = 0;
 
-    [Symbol.iterator]() {
+    constructor(private string: string) {}
+
+    next(...args: []): IteratorResult<string, any> {
+        const value = this.string.charAt(this.offset++);
+
+        return value !== ''
+            ? { value }
+            : { done: true, value: undefined };
+    }
+
+    [Symbol.iterator](): Iterator<string> {
         return this;
-    }
-
-    next(...args: [] | [undefined]): IteratorResult<string, any> {
-        if (this.string.length <= this.offset) return this.return();
-        return { value: this.string.charAt(this.offset++) };
-    }
-
-    return(value?: any): IteratorResult<string, any> {
-        return {
-            done: true,
-            value: undefined,
-        }
-    }
-
-    throw(e?: any): IteratorResult<string, any> {
-        return this.return();
-    }
-
-    static concat = function*(...iterators: Iterable<string>[]) {
-        for (const iterator of iterators) {
-            for (const char of iterator) {
-                yield char;
-            }
-        }
     }
 }

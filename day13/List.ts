@@ -1,27 +1,33 @@
-import {IPacketData} from "./IPacketData";
+import {IPacketData, ValidationResult} from "./IPacketData";
 import {Integer} from "./Integer";
 import {StringIterator} from "./StringIterator";
 
 export class List implements IPacketData {
     constructor(private data: IPacketData[]) {}
 
-    validateOrder(right: IPacketData | undefined): boolean {
-        if(!right) return false;
-
-        const left = this;
+    validate(right: IPacketData | undefined): ValidationResult {
+        if(!right) {
+            return ValidationResult.Bad;
+        }
 
         if(right instanceof Integer) {
-            return this.validateOrder(new List([right]));
+            return this.validate(new List([right]));
         }
         if(right instanceof List) {
             for (const pair of this.createListPair(right)) {
-                if (!left) return true;
-                if (left.validateOrder(right))
+                if (!pair.left) {
+                    return ValidationResult.Good;
+                }
+
+                const validationResult = pair.left.validate(pair.right);
+                if ([
+                    ValidationResult.Good,
+                    ValidationResult.Bad
+                ].includes(validationResult)) {
+                    return validationResult;
+                }
             }
-            const a = this.createListPair(right as List).map(([left, right]) => {
-                return left ? left.validateOrder(right) : true;
-            }).includes()
-            return true;
+            return ValidationResult.Maybe;
         }
 
         throw new Error('unhandled IPacketData type');
@@ -29,11 +35,18 @@ export class List implements IPacketData {
 
     createListPair(right: List) {
         const left = this;
-        const result: [IPacketData?, IPacketData?][] = [];
+        const result: {left?: IPacketData, right?: IPacketData}[] = [];
         for (let i = 0; left.data[i] || right.data[i]; i++) {
-            result.push([left.data[i], right.data[i]]);
+            result.push({
+                left: left.data[i],
+                right: right.data[i],
+            });
         }
         return result;
+    }
+
+    toString(): string {
+        return `[${this.data.join(',')}]`;
     }
 
     static fromString(input: string): List {
@@ -44,16 +57,21 @@ export class List implements IPacketData {
 
     static fromCharIterator(iterator: Iterable<string>) {
         const data: IPacketData[] = [];
+        let integerStringBuffer = '';
         for (const char of iterator) {
-            switch (true) {
-                case char === '[':
-                    data.push(List.fromCharIterator(iterator));
-                    break;
-                case char === ']':
-                    return new List(data);
-                case /\d/.test(char):
-                    data.push(Integer.fromCharIterator(StringIterator.concat(char, iterator)));
-                    break;
+            if (/\d/.test(char)) {
+                integerStringBuffer += char;
+                continue
+            } else if (integerStringBuffer.length > 0) {
+                data.push(Integer.fromCharIterator(integerStringBuffer));
+                integerStringBuffer = '';
+            }
+            if (char === '[') {
+                data.push(List.fromCharIterator(iterator));
+                continue;
+            }
+            if (char === ']') {
+                return new List(data);
             }
         }
 
