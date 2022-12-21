@@ -1,7 +1,7 @@
 export enum ValidationResult {
-    Good,
-    Maybe,
-    Bad,
+    Bad = 1,
+    Maybe = 0,
+    Good = -1,
 }
 
 export interface IPacketData{

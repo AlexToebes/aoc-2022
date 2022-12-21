@@ -19,11 +19,32 @@ export type PacketPair = [List, List];
         packetPair.push(List.fromString(line));
     }
 
+    const dividerPackets: List[] = [
+        List.fromString('[[2]]'),
+        List.fromString('[[6]]'),
+    ]
+
+    const packets: List[] = [
+        ...dividerPackets,
+        ...packetPairs.flatMap(packetPair => packetPair)
+    ];
+
     console.log({
         challenge1: packetPairs
             .map(([left, right]) => left.validate(right) === ValidationResult.Good)
-            .reduce((sum, isValidOrder, index) => isValidOrder ? sum + index + 1 : sum, 0),
-        challenge2: null,
+            .reduce((sum, isValidOrder, index) =>
+                isValidOrder ? sum + index + 1 : sum, 0),
+        challenge2: packets
+            .sort((a, b) => a.validate(b))
+            .map((packet, index) => ({
+                index: index + 1,
+                packet,
+                isDivider: dividerPackets.includes(packet)
+            }))
+            // .map(({index, isDivider, packet}) => console.log(`${index} \t ${isDivider} \t ${packet}`))
+            .filter(({isDivider}) => isDivider)
+            .map(({index}) => index)
+            .reduce((a, b) => a * b),
     });
 
 })(fsPromises.readFile(pathJoin(__dirname, 'input.txt'), 'utf-8'))
