@@ -1,9 +1,14 @@
-import {promises as fsPromises} from "fs";
-import {join as pathJoin} from "path";
+import {Challenge, challenges} from "../helpers";
 
-(async (input) => {
-    const lines = (await input).split(/\r?\n/).filter(line => line);
+const challenge1: Challenge = (input) => {
+    console.log(input.split(/\r?\n/).filter(line => line));
+};
 
-    console.log(lines);
+const challenge2: Challenge = (input) => {
 
-})(fsPromises.readFile(pathJoin(__dirname, 'input.txt'), 'utf-8'))
+};
+
+challenges(__dirname, {
+    challenge1,
+    challenge2
+})

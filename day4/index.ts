@@ -1,29 +1,35 @@
-import {promises as fsPromises} from "fs";
-import {join as pathJoin} from "path";
+import {Challenge, challenges} from "../helpers";
 import {Assignment} from "./Assignment";
 
-(async (input) => {
-    const lines = (await input)
+const challenge1: Challenge = (input) => {
+    const lines = input
         .split(/\r?\n/)
         .filter(line => line)
         .map(line => line.split(','));
 
     const assignmentPairs = lines.map(line => line.map(part => Assignment.fromString(part)))
 
-    const challenge1 = () => {
-        return assignmentPairs
-            .map(([ass1, ass2]) => ass1.contains(ass2) || ass2.contains(ass1))
-            .filter(r => r)
-            .length;
-    }
+    return assignmentPairs
+        .map(([ass1, ass2]) => ass1.contains(ass2) || ass2.contains(ass1))
+        .filter(r => r)
+        .length;
+};
 
-    const challenge2 = () => {
-        return assignmentPairs
-            .map(([ass1, ass2]) => ass1.overlaps(ass2))
-            .filter(r => r)
-            .length;
-    }
+const challenge2: Challenge = (input) => {
+    const lines = input
+        .split(/\r?\n/)
+        .filter(line => line)
+        .map(line => line.split(','));
 
-    console.log(challenge2());
+    const assignmentPairs = lines.map(line => line.map(part => Assignment.fromString(part)))
 
-})(fsPromises.readFile(pathJoin(__dirname, 'input.txt'), 'utf-8'))
+    return assignmentPairs
+        .map(([ass1, ass2]) => ass1.overlaps(ass2))
+        .filter(r => r)
+        .length;
+};
+
+challenges(__dirname, {
+    challenge1,
+    challenge2
+})
