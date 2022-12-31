@@ -7,13 +7,15 @@ export abstract class Action {
         return 0;
     }
 
-    getNextActions(): Iterable<Action> {
-        return Action.getNextActions(this);
+    getNextActions(skipValves?: Valve[]): Iterable<Action> {
+        return Action.getNextActions(this, skipValves);
     }
 
-    static getNextActions = function*(action: OpenValve): Iterable<Action> {
+    static getNextActions = function*(action: OpenValve, skipValves: Valve[] = []): Iterable<Action> {
         for (const [valve, distance] of action.valve.distanceTo.entries()) {
-            yield new OpenValve(valve, distance + 1);
+            if (!skipValves.includes(valve)) {
+                yield new OpenValve(valve, distance + 1);
+            }
         }
     }
 }
@@ -21,6 +23,12 @@ export abstract class Action {
 export class Start extends Action {
     constructor(valve: Valve) {
         super(valve, 0);
+    }
+}
+
+export class ElephantTraining extends Action {
+    constructor(valve: Valve) {
+        super(valve, 4);
     }
 }
 

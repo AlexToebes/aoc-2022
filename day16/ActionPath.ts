@@ -1,10 +1,8 @@
 import {Action, OpenValve} from "./Action";
 import {Valve} from "./Valve";
 
-export type ActionPathFilter = (value: ActionPath, index: number, array: ActionPath[]) => (boolean | undefined);
-
 export class ActionPath {
-    static maxPathLength = 30;
+    static maxDuration = 30;
 
     readonly pressureReleased: number;
     readonly timeUsed: number;
@@ -24,21 +22,24 @@ export class ActionPath {
         this.openedValves = this.path.filter(action => action instanceof OpenValve).map(({valve}) => valve)
     }
 
-    getNextActions(): Iterable<ActionPath> {
-        return ActionPath.getNextActions(this);
+    getNextActions(skipValves?: Valve[]): Iterable<ActionPath> {
+        return ActionPath.getNextActions(this, skipValves);
     }
 
-    static getNextActions = function*(actionPath: ActionPath): Iterable<ActionPath> {
+    static getNextActions = function*(actionPath: ActionPath, skipValves?: Valve[]): Iterable<ActionPath> {
         const lastAction = actionPath.path.at(-1);
         if (!lastAction) return [];
 
-        yield* [...lastAction.getNextActions()]
-            .filter(action => {
-                return actionPath.timeUsed + action.duration < ActionPath.maxPathLength
-                    && action.valve.flowRate > 0
-                    && !actionPath.openedValves.includes(action.valve);
-            })
-            .map(action => new ActionPath([...actionPath.path, action]))
+        for (const action of lastAction.getNextActions(skipValves)) {
+            // Skip paths that exceed maxDuration
+            if (actionPath.timeUsed + action.duration >= ActionPath.maxDuration) continue;
+            // Don't visit valves that are already opened
+            if (actionPath.openedValves.includes(action.valve)) continue;
+
+            const nextAction = new ActionPath([...actionPath.path, action]);
+
+            yield nextAction;
+        }
     }
 
     static minuteGenerator = function*(actionPath: ActionPath): Iterable<{ minute: number, action?: Action }> {
@@ -52,16 +53,40 @@ export class ActionPath {
             }
         }
 
-        while (minute < ActionPath.maxPathLength) {
+        while (minute < ActionPath.maxDuration) {
             yield { minute: ++minute }
         }
     }
 
-    static actionPathGenerator = function*(actionPath: ActionPath): Iterable<ActionPath> {
-        const nextActionPaths = actionPath.getNextActions();
+    static actionPathGenerator = function*(actionPath: ActionPath, skipValves?: Valve[]): Iterable<ActionPath> {
+        const nextActionPaths = actionPath.getNextActions(skipValves);
         yield actionPath;
         for (const nextActionPath of nextActionPaths) {
-            yield* ActionPath.actionPathGenerator(nextActionPath);
+            yield* ActionPath.actionPathGenerator(nextActionPath, skipValves);
+        }
+    }
+
+    static teamActionPathGenerator = function*(actionPaths: ActionPath[], skipValves?: Valve[]): Iterable<ActionPath[]> {
+        const [actionPath, ...otherActionPaths] = actionPaths;
+
+        if (otherActionPaths.length < 1) {
+            for (const nextAPs of ActionPath.actionPathGenerator(actionPath, skipValves)) {
+                yield [nextAPs];
+            }
+            return;
+        }
+
+        for (const nextOtherActionPath of ActionPath.teamActionPathGenerator(otherActionPaths, skipValves)) {
+            const nextSkipValves = nextOtherActionPath.reduce(
+                (nextSkipValves, {openedValves}) => {
+                    return nextSkipValves.concat(openedValves.filter(valve => !nextSkipValves.includes(valve)));
+                },
+                skipValves || [],
+            );
+
+            for (const nextActionPaths of ActionPath.actionPathGenerator(actionPath, nextSkipValves)) {
+                yield [nextActionPaths, ...nextOtherActionPath];
+            }
         }
     }
 }

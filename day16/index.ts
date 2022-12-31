@@ -1,15 +1,18 @@
 import {Challenge, challenges} from "../helpers";
 import {Valve} from "./Valve";
 import {ActionPath} from "./ActionPath";
-import {Start} from "./Action";
+import {ElephantTraining, Start} from "./Action";
 
 const challenge1: Challenge = (input) => {
     const valveLayout = Valve.fromString(input);
     const startValve = valveLayout.find(({name}) => name === 'AA');
     if (!startValve) throw new Error(`startValve not found!`);
 
+    const skipValves = valveLayout.filter(({flowRate}) => flowRate < 1);
+
     const actionPathIterator = ActionPath.actionPathGenerator(
-        new ActionPath([new Start(startValve)])
+        new ActionPath([new Start(startValve)]),
+        skipValves,
     );
 
     let bestActionPath: ActionPath | undefined;
@@ -24,7 +27,27 @@ const challenge1: Challenge = (input) => {
 };
 
 const challenge2: Challenge = (input) => {
+    const valveLayout = Valve.fromString(input);
+    const startValve = valveLayout.find(({name}) => name === 'AA');
+    if (!startValve) throw new Error(`startValve not found!`);
 
+    const skipValves = valveLayout.filter(({flowRate}) => flowRate < 1);
+
+    const teamActionPathIterator = ActionPath.teamActionPathGenerator([
+        new ActionPath([new ElephantTraining(startValve)]),
+        new ActionPath([new ElephantTraining(startValve)]),
+    ], skipValves);
+
+    let bestTeamActionPath: number | undefined;
+
+    for (const teamActionPath of teamActionPathIterator) {
+        const pressureReleased = teamActionPath.reduce((sum, {pressureReleased}) => sum + pressureReleased, 0);
+        if (!bestTeamActionPath || bestTeamActionPath < pressureReleased) {
+            bestTeamActionPath = pressureReleased;
+        }
+    }
+
+    return bestTeamActionPath;
 };
 
 challenges(__dirname, {
