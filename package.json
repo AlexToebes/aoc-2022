@@ -19,7 +19,8 @@
     "day13": "ts-node-dev ./day13",
     "day14": "ts-node-dev ./day14",
     "day15": "ts-node-dev ./day15",
-    "day16": "ts-node-dev ./day16"
+    "day16": "ts-node-dev ./day16",
+    "day17": "ts-node-dev ./day17"
   },
   "keywords": [],
   "author": "",
